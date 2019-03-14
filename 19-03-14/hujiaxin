@@ -1,0 +1,58 @@
+正则表达式匹配：
+class Solution {
+public:
+    bool match(char* str, char* pattern)
+    {
+        if(str ==nullptr || pattern == nullptr) return false;
+        
+        return matchCore(str,pattern,0,0);
+    }
+    
+    bool matchCore(char* str, char* pattern, int s, int p)
+    {
+        //str结束但partern没结束是可以的，反之不可以
+        if(str[s]== '\0' && pattern[p]=='\0')
+            return true;
+        if(str[s]!= '\0' && pattern[p]=='\0')
+            return false;
+        if(pattern[p+1] == '*')
+        {
+            //当前字符可以匹配上
+            if(pattern[p]==str[s] || (pattern[p] == '.'&& str[s] != '\0')){
+                return matchCore(str,pattern,s+1,p+2)||matchCore(str,pattern,s,p+2)|| matchCore(str,pattern,s+1,p);
+            }else{ //当前字符不能匹配上
+                return matchCore(str,pattern,s,p+2);
+            }
+        }
+        if(pattern[p]==str[s] || (pattern[p] == '.'&& str[s] != '\0'))
+            return matchCore(str,pattern,s+1,p+1);
+        return false;
+    }
+};
+
+最长回文字符串：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
+动态规划问题：//dp[i][j]b表示子串s[i:j]的最长回文子序列
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        int len = s.size();
+        if(len<1) return 0;
+        
+        int dp[len][len];
+        memset(dp,0,sizeof(dp));
+        for(int i=0;i<len;i++) dp[i][i] = 1;
+        
+        for(int i=len-1;i>=0;i--)
+        {
+            for(int j = i+1;j<len;j++)
+            {
+                if(s[i] == s[j]) 
+                    dp[i][j] = dp[i+1][j-1]+2;
+                else
+                    dp[i][j] = max(dp[i+1][j],dp[i][j-1]);
+            }
+            
+        }
+        return dp[0][len-1];
+    }
+};
